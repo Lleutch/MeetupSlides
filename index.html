@@ -1,0 +1,519 @@
+﻿<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Presentation</title>
+    <meta name="description" content="">
+    <meta name="author" content="unkown">
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <script src="//code.jquery.com/jquery-1.8.0.js"></script>
+    <script src="//code.jquery.com/ui/1.8.23/jquery-ui.js"></script>
+    <script src="//netdna.bootstrapcdn.com/twitter-bootstrap/2.2.1/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="//cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link href="//netdna.bootstrapcdn.com/twitter-bootstrap/2.2.1/css/bootstrap-combined.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="css/reveal.css">
+    <link rel="stylesheet" href="css/theme/night.css" id="theme">
+    <link type="text/css" rel="stylesheet" href="fsharp.formatting/styles/style.css" />
+    <link type="text/css" rel="stylesheet" href="fsharp.formatting/styles/deedle.css" />
+    <link type="text/css" rel="stylesheet" href="css/custom.css" />
+    <script src="fsharp.formatting/styles/tips.js" type="text/javascript"></script>
+    <!-- For syntax highlighting -->
+    <link rel="stylesheet" href="lib/css/zenburn.css">
+    <link rel="stylesheet" href="css/fsreveal.css">
+    <!-- If the query includes 'print-pdf', include the PDF print sheet -->
+    <script>
+			if( window.location.search.match( /print-pdf/gi ) ) {
+				var link = document.createElement( 'link' );
+				link.rel = 'stylesheet';
+				link.type = 'text/css';
+				link.href = 'css/print/pdf.css';
+				document.getElementsByTagName( 'head' )[0].appendChild( link );
+			}
+    </script>
+    <!--[if lt IE 9]>
+    <script src="lib/js/html5shiv.js"></script>
+    <![endif]-->
+    <script language="javascript" type="text/javascript">
+        function init()
+        {
+            websocket = new WebSocket("ws://"+window.location.host+"/websocket");
+            websocket.onmessage = function(evt) { location.reload(); };
+        }
+        window.addEventListener("load", init, false);
+    </script>
+</head>
+<body>
+    <div class="reveal">
+        <div class="tip" id="fs1">type Test = obj<br /><br />Full name: index.Test</div>
+<div class="tip" id="fs2">val test : obj<br /><br />Full name: index.test</div>
+<div class="tip" id="fs3">val age : obj<br /><br />Full name: index.age</div>
+<div class="tip" id="fs4">val name : obj<br /><br />Full name: index.name</div>
+<div class="tip" id="fs5">val c : obj<br /><br />Full name: index.c</div>
+<div class="tip" id="fs6">val n : int<br /><br />Full name: index.n</div>
+<div class="tip" id="fs7">val buf : obj<br /><br />Full name: index.buf</div>
+<div class="tip" id="fs8">Multiple items<br />val int : value:&#39;T -&gt; int (requires member op_Explicit)<br /><br />Full name: Microsoft.FSharp.Core.Operators.int<br /><br />--------------------<br />type int = int32<br /><br />Full name: Microsoft.FSharp.Core.int<br /><br />--------------------<br />type int&lt;&#39;Measure&gt; = int<br /><br />Full name: Microsoft.FSharp.Core.int&lt;_&gt;</div>
+<div class="tip" id="fs9">val n : int * &#39;a</div>
+<div class="tip" id="fs10">Multiple items<br />val byte : value:&#39;T -&gt; byte (requires member op_Explicit)<br /><br />Full name: Microsoft.FSharp.Core.Operators.byte<br /><br />--------------------<br />type byte = System.Byte<br /><br />Full name: Microsoft.FSharp.Core.byte</div>
+<div class="tip" id="fs11">Multiple items<br />val string : value:&#39;T -&gt; string<br /><br />Full name: Microsoft.FSharp.Core.Operators.string<br /><br />--------------------<br />type string = System.String<br /><br />Full name: Microsoft.FSharp.Core.string</div>
+<div class="tip" id="fs12">type &#39;T list = List&lt;&#39;T&gt;<br /><br />Full name: Microsoft.FSharp.Collections.list&lt;_&gt;</div>
+<div class="tip" id="fs13">type AsyncReplyChannel&lt;&#39;Reply&gt;<br />member Reply : value:&#39;Reply -&gt; unit<br /><br />Full name: Microsoft.FSharp.Control.AsyncReplyChannel&lt;_&gt;</div>
+
+        <!-- Any section element inside of this container is displayed as a slide -->
+        <div class="slides">
+            <section author="Fahd Abdeljallal" description="Session types for .Net" theme="sky" title="Session#" transition="default">
+<img width="250" src="images/logo.png">
+<h2>Session types for F#</h2>
+<blockquote>
+<p><strong>By</strong> Fahd Abdeljallal</p>
+</blockquote>
+</section>
+<section >
+<h3>Table of Contents</h3>
+<ul>
+<li><a href="#motivation">Motivation</a></li>
+<li><a href="#session">What are Session Types?</a></li>
+<li><a href="#scribble">Scribble: A language to describe application-level protocols</a></li>
+<li><a href="#session2">Session#: A Generative Type Provider</a></li>
+<li><a href="#demo">Demo</a></li>
+<li><a href="#depth">In Depth</a></li>
+</ul>
+</section>
+<section >
+<h3>Motivation <a name="motivation"></a></h3>
+<ul>
+<li>Codify the structure of communication</li>
+<li>Avoid communication errors such as deadlocks, communication mismatches</li>
+<li>Provide type-safe way of communicating regarding a network protocol.</li>
+</ul>
+</section>
+<section >
+<section >
+<div style="float: right;" width ="50%">
+    <ul>
+    <li>The adoption of session types in
+         mainstream programming languages is challenging </li>     
+    <li> Disadvantages of code generation </li>
+        <ul>
+        <li> Maintanability </li>     
+        <li> Increases the overall project size and complexity </li>     
+        <li> The generated types can be easily tempered </li>     
+        </ul>     
+    </ul>
+</div>
+</section>
+<section >
+<h3>Background -- Type Provider</h3>
+<table class="pre"><tr><td class="lines"><pre class="fssnip"><span class="l">1: </span>
+<span class="l">2: </span>
+<span class="l">3: </span>
+<span class="l">4: </span>
+</pre></td>
+<td class="snippet"><pre class="fssnip highlighted"><code lang="fsharp"><span class="k">type</span> <span onmouseout="hideTip(event, 'fs1', 1)" onmouseover="showTip(event, 'fs1', 1)" class="t">Test</span> <span class="o">=</span> <span class="i">JsonProvider</span><span class="o">&lt;</span><span class="s">&quot;&quot;&quot; { &quot;name&quot; : &quot;Fahd&quot; ,&quot;age&quot; : &quot;22&quot; } &quot;&quot;&quot;</span><span class="o">&gt;</span>
+<span class="k">let</span> <span onmouseout="hideTip(event, 'fs2', 2)" onmouseover="showTip(event, 'fs2', 2)" class="i">test</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs1', 3)" onmouseover="showTip(event, 'fs1', 3)" class="i">Test</span><span class="o">.</span><span class="i">Parse</span>(<span class="s">&quot;&quot;&quot; { &quot;name&quot; : &quot;Khalissa&quot; , &quot;age&quot; : &quot;1&quot; } &quot;&quot;&quot;</span>)
+<span class="k">let</span> <span onmouseout="hideTip(event, 'fs3', 4)" onmouseover="showTip(event, 'fs3', 4)" class="i">age</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs2', 5)" onmouseover="showTip(event, 'fs2', 5)" class="i">test</span><span class="o">.</span><span class="i">Age</span> <span class="c">// -&gt; 1</span>
+<span class="k">let</span> <span onmouseout="hideTip(event, 'fs4', 6)" onmouseover="showTip(event, 'fs4', 6)" class="i">name</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs2', 7)" onmouseover="showTip(event, 'fs2', 7)" class="i">test</span><span class="o">.</span><span class="i">Name</span> <span class="c">// -&gt; Khalissa</span>
+</code></pre></td>
+</tr>
+</table>
+<ul>
+<li>Compiler extension</li>
+<li>Generate types into the compiler instead of providing them in the source code</li>
+<li>Provides types <strong><em>On-Demand</em></strong></li>
+<li>Using Meta-information as a schema</li>
+</ul>
+</section>
+</section>
+<section >
+<h3>Example</h3>
+<ul>
+<li>
+Fibonacci
+<ul>
+<li>Client - Server interaction/conversation</li>
+<li>
+Client
+<ul>
+<li>sends 2 Values = <strong>U</strong><em>n</em> and <strong>U</strong><em>n+1</em></li>
+<li>finishes <em>conversation</em></li>
+</ul>
+</li>
+<li>
+Server
+<ul>
+<li>receives 2 Values and adds them <strong><em>OR</em></strong> the conversation</li>
+<li>sends the result</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<img width="400" src="images/example.png">
+</section>
+<section >
+<section >
+<h3>Session types <a name="session"></a></h3>
+<ul>
+<li>Formalism to describe protocol</li>
+<li>
+2 Kinds:
+<ul>
+<li>Binary</li>
+<li>Multiparty</li>
+</ul>
+</li>
+<li>Global Type</li>
+</ul>
+<blockquote>
+<p>1 : C &#x2192; S :  c{&mu;<strong>t</strong>.fib &#60; int,int &#62; 
+: S &#x2192; C : fib &#60; int &#62;.<strong>t</strong> <br>
+bye &#60; &#62; .end }</p>
+</blockquote>
+</section>
+<section >
+<h3>Session types</h3>
+<img width="400" src="images/operations.png">
+</section>
+</section>
+<section >
+<h3>Session types</h3>
+<ul>
+<li>
+Local Type = projection over a local role
+<li><p> &#8660; <strong> CFSM </strong> </p> </li>
+</li>
+<li> <strong> Duality </strong> </li>
+</ul>
+<img width="400" src="images/st.gif">
+</section>
+<section >
+<h3>Scribble <a name="scribble"></a></h3>
+<ul>
+<li>Language to describe application-level protocols</li>
+<li>Based on session types Formalism</li>
+<li>Verify (Well-formedness)</li>
+<li>Project (Global-type <em>to</em> Local-type )</li>
+</ul>
+<table class="pre"><tr><td class="lines"><pre class="fssnip"><span class="l"> 1: </span>
+<span class="l"> 2: </span>
+<span class="l"> 3: </span>
+<span class="l"> 4: </span>
+<span class="l"> 5: </span>
+<span class="l"> 6: </span>
+<span class="l"> 7: </span>
+<span class="l"> 8: </span>
+<span class="l"> 9: </span>
+<span class="l">10: </span>
+<span class="l">11: </span>
+<span class="l">12: </span>
+<span class="l">13: </span>
+<span class="l">14: </span>
+<span class="l">15: </span>
+</pre></td>
+<td class="snippet"><pre class="fssnip"><code lang="yaml">module demo;
+
+type &lt;fsharp&gt; "System.Int32" from "Location" as Int;
+
+global protocol Fibonacci(role A, role B){
+    rec Fib {
+        choice at A {
+            fib(Int,Int) from A to B;
+            fib(Int) from B to A;
+            continue Fib;
+        } or {
+            bye() from A to B;
+        }
+    }
+}
+</code></pre></td></tr></table>
+</section>
+<section >
+<section >
+<h3>Local Type via Projection</h3>
+<table class="pre"><tr><td class="lines"><pre class="fssnip"><span class="l"> 1: </span>
+<span class="l"> 2: </span>
+<span class="l"> 3: </span>
+<span class="l"> 4: </span>
+<span class="l"> 5: </span>
+<span class="l"> 6: </span>
+<span class="l"> 7: </span>
+<span class="l"> 8: </span>
+<span class="l"> 9: </span>
+<span class="l">10: </span>
+<span class="l">11: </span>
+</pre></td>
+<td class="snippet"><pre class="fssnip"><code lang="yaml">local protocol Fibonacci_A at A(A, B) {
+    rec Fib {
+        choice at A{
+            fib(Int, Int) to B;
+            fib(Int) from B;
+            continue Fib;
+        } or {
+            bye() to B;
+        }
+    }
+}
+</code></pre></td></tr></table>
+</section>
+<section >
+<table class="pre"><tr><td class="lines"><pre class="fssnip"><span class="l"> 1: </span>
+<span class="l"> 2: </span>
+<span class="l"> 3: </span>
+<span class="l"> 4: </span>
+<span class="l"> 5: </span>
+<span class="l"> 6: </span>
+<span class="l"> 7: </span>
+<span class="l"> 8: </span>
+<span class="l"> 9: </span>
+<span class="l">10: </span>
+<span class="l">11: </span>
+</pre></td>
+<td class="snippet"><pre class="fssnip"><code lang="yaml">local protocol Fibonacci_B at B(A, B) {
+    rec Fib {
+        choice at A{
+            fib(Int, Int) from A;
+            fib(Int) to A;
+            continue Fib;
+        } or {
+            bye() from A;
+        }
+    }
+}
+</code></pre></td></tr></table>
+</section>
+</section>
+<section >
+<img width="500" src="images/fibo.png">
+</section>
+<section >
+<h3>Session types primitives - Send and Receive <a name="session2"></a></h3>
+<table class="pre"><tr><td class="lines"><pre class="fssnip"><span class="l">1: </span>
+</pre></td>
+<td class="snippet"><pre class="fssnip"><code lang="yaml">fib(Int) from B to A;
+</code></pre></td></tr></table>
+<div align = "left">
+     <ul>
+        <li> Implementation for B </li>
+    </ul>
+</div>
+<table class="pre"><tr><td class="lines"><pre class="fssnip"><span class="l">1: </span>
+<span class="l">2: </span>
+<span class="l">3: </span>
+<span class="l">4: </span>
+</pre></td>
+<td class="snippet"><pre class="fssnip highlighted"><code lang="fsharp"><span class="k">let</span> <span onmouseout="hideTip(event, 'fs5', 8)" onmouseover="showTip(event, 'fs5', 8)" class="i">c</span> <span class="o">=</span> <span class="k">new</span> <span class="i">Provided</span><span class="o">.</span><span class="i">TypeProviderFile</span><span class="o">&lt;</span><span class="s">&quot;Scribble.scr&quot;</span>,<span class="i">protocol</span>,<span class="s">&quot;B&quot;</span><span class="o">&gt;</span>() 
+
+<span class="k">let</span> <span onmouseout="hideTip(event, 'fs6', 9)" onmouseover="showTip(event, 'fs6', 9)" class="i">n</span> <span class="o">=</span> <span class="n">5</span>                            
+<span onmouseout="hideTip(event, 'fs5', 10)" onmouseover="showTip(event, 'fs5', 10)" class="i">c</span><span class="o">.</span><span class="i">sendfib</span>(<span class="i">A</span>,<span onmouseout="hideTip(event, 'fs6', 11)" onmouseover="showTip(event, 'fs6', 11)" class="i">n</span>)
+</code></pre></td>
+</tr>
+</table>
+<div align = "left">
+    <ul>
+        <li> Implementation for A </li>
+    </ul>
+</div>
+<table class="pre"><tr><td class="lines"><pre class="fssnip"><span class="l">1: </span>
+<span class="l">2: </span>
+<span class="l">3: </span>
+<span class="l">4: </span>
+</pre></td>
+<td class="snippet"><pre class="fssnip highlighted"><code lang="fsharp"><span class="k">let</span> <span onmouseout="hideTip(event, 'fs5', 12)" onmouseover="showTip(event, 'fs5', 12)" class="i">c</span> <span class="o">=</span> <span class="k">new</span> <span class="i">Provided</span><span class="o">.</span><span class="i">TypeProviderFile</span><span class="o">&lt;</span><span class="s">&quot;Scribble.scr&quot;</span>,<span class="i">protocol</span>,<span class="s">&quot;A&quot;</span><span class="o">&gt;</span>()
+
+<span class="k">let</span> <span onmouseout="hideTip(event, 'fs7', 13)" onmouseover="showTip(event, 'fs7', 13)" class="i">buf</span> <span class="o">=</span> <span class="k">new</span> <span class="i">DomainModel</span><span class="o">.</span><span class="i">Buf</span><span class="o">&lt;</span><span onmouseout="hideTip(event, 'fs8', 14)" onmouseover="showTip(event, 'fs8', 14)" class="i">int</span><span class="o">&gt;</span>()       
+<span onmouseout="hideTip(event, 'fs5', 15)" onmouseover="showTip(event, 'fs5', 15)" class="i">c</span><span class="o">.</span><span class="i">receivefib</span>(<span class="i">B</span>,<span onmouseout="hideTip(event, 'fs7', 16)" onmouseover="showTip(event, 'fs7', 16)" class="i">buf</span>)
+</code></pre></td>
+</tr>
+</table>
+</section>
+<section >
+<h3>Session types primitives -- Selection</h3>
+<table class="pre"><tr><td class="lines"><pre class="fssnip"><span class="l">1: </span>
+<span class="l">2: </span>
+<span class="l">3: </span>
+<span class="l">4: </span>
+<span class="l">5: </span>
+<span class="l">6: </span>
+</pre></td>
+<td class="snippet"><pre class="fssnip"><code lang="yaml">choice at A {
+    fib(Int,Int) from A to B;
+    ...
+} or {
+     bye() from A to B;
+}
+</code></pre></td></tr></table>
+<p>Implementation for A</p>
+<table class="pre"><tr><td class="lines"><pre class="fssnip"><span class="l">1: </span>
+<span class="l">2: </span>
+<span class="l">3: </span>
+<span class="l">4: </span>
+</pre></td>
+<td class="snippet"><pre class="fssnip highlighted"><code lang="fsharp"><span class="k">let</span> <span onmouseout="hideTip(event, 'fs9', 17)" onmouseover="showTip(event, 'fs9', 17)" class="i">n</span> <span class="o">=</span> <span class="n">5</span> , <span class="k">let</span> <span class="i">m</span> <span class="o">=</span> <span class="n">8</span>
+<span class="k">match</span> <span class="i">value</span> <span class="k">with</span>
+    |<span class="n">0</span> <span class="k">-&gt;</span> <span onmouseout="hideTip(event, 'fs5', 18)" onmouseover="showTip(event, 'fs5', 18)" class="i">c</span><span class="o">.</span><span class="i">sendbye</span>(<span class="i">B</span>)
+    |<span onmouseout="hideTip(event, 'fs9', 19)" onmouseover="showTip(event, 'fs9', 19)" class="i">n</span> <span class="k">-&gt;</span> <span onmouseout="hideTip(event, 'fs5', 20)" onmouseover="showTip(event, 'fs5', 20)" class="i">c</span><span class="o">.</span><span class="i">sendfib</span>(<span class="i">B</span>,<span onmouseout="hideTip(event, 'fs9', 21)" onmouseover="showTip(event, 'fs9', 21)" class="i">n</span>,<span class="i">m</span>)
+</code></pre></td>
+</tr>
+</table>
+</section>
+<section >
+<h3>Session types primitives -- Branching</h3>
+<table class="pre"><tr><td class="lines"><pre class="fssnip"><span class="l">1: </span>
+<span class="l">2: </span>
+<span class="l">3: </span>
+<span class="l">4: </span>
+<span class="l">5: </span>
+<span class="l">6: </span>
+</pre></td>
+<td class="snippet"><pre class="fssnip"><code lang="yaml">choice at A {
+    fib(Int,Int) from A to B;
+    ...
+} or {
+     bye() from A to B;
+}
+</code></pre></td></tr></table>
+<p>Implementation for B</p>
+<table class="pre"><tr><td class="lines"><pre class="fssnip"><span class="l">1: </span>
+<span class="l">2: </span>
+<span class="l">3: </span>
+<span class="l">4: </span>
+<span class="l">5: </span>
+</pre></td>
+<td class="snippet"><pre class="fssnip highlighted"><code lang="fsharp"><span class="k">let</span> <span class="i">buf1</span>,<span class="i">buf2</span> <span class="o">=</span> <span class="k">new</span> <span class="i">DomainModel</span><span class="o">.</span><span class="i">Buf</span><span class="o">&lt;</span><span onmouseout="hideTip(event, 'fs8', 22)" onmouseover="showTip(event, 'fs8', 22)" class="i">int</span><span class="o">&gt;</span>()
+
+<span class="k">match</span> <span onmouseout="hideTip(event, 'fs5', 23)" onmouseover="showTip(event, 'fs5', 23)" class="i">c</span><span class="o">.</span><span class="i">branch</span>() <span class="k">with</span>
+    | <span class="o">:?</span> <span class="i">ByeChoice</span> <span class="k">as</span> <span class="i">bye</span> <span class="k">-&gt;</span> <span class="i">bye</span><span class="o">.</span><span class="i">receive</span>(<span class="i">A</span>)
+    | <span class="o">:?</span> <span class="i">FibChoice</span> <span class="k">as</span> <span class="i">fib</span> <span class="k">-&gt;</span> <span class="i">fib</span><span class="o">.</span><span class="i">receive</span>(<span class="i">A</span>,<span class="i">buf1</span>,<span class="i">buf2</span>)
+</code></pre></td>
+</tr>
+</table>
+</section>
+<section >
+<h3>IntelliSense</h3>
+<img width="1000" src="images/intellisense.jpg">
+</section>
+<section >
+<h3>General Architecture</h3>
+<img width="1000" src="images/Design.png">
+</section>
+<section >
+<h3>Demo-time <a name="demo"></a></h3>
+<p><img src="images/logo.png" alt="alt text" title="Session#" /></p>
+</section>
+<section >
+<h3>Generative Type Provider <a name="depth"></a></h3>
+<img width="1000" src="images/done.png">
+</section>
+<section >
+<h3>Communication Architecture</h3>
+<img width="600" src="images/Actor.png">
+</section>
+<section >
+<section >
+<h3>Communication Architecture</h3>
+<table class="pre"><tr><td class="lines"><pre class="fssnip"><span class="l">1: </span>
+<span class="l">2: </span>
+<span class="l">3: </span>
+<span class="l">4: </span>
+</pre></td>
+<td class="snippet"><pre class="fssnip highlighted"><code lang="fsharp"><span class="k">type</span> <span class="i">MessageAction</span> <span class="o">=</span>
+    |<span class="i">SendMessage</span> <span class="k">of</span> <span onmouseout="hideTip(event, 'fs10', 24)" onmouseover="showTip(event, 'fs10', 24)" class="i">byte</span> [] <span class="o">*</span> <span onmouseout="hideTip(event, 'fs11', 25)" onmouseover="showTip(event, 'fs11', 25)" class="i">string</span> 
+    |<span class="i">ReceiveMessage</span> <span class="k">of</span> <span onmouseout="hideTip(event, 'fs10', 26)" onmouseover="showTip(event, 'fs10', 26)" class="i">byte</span>[] <span onmouseout="hideTip(event, 'fs12', 27)" onmouseover="showTip(event, 'fs12', 27)" class="i">list</span> <span class="o">*</span> <span onmouseout="hideTip(event, 'fs11', 28)" onmouseover="showTip(event, 'fs11', 28)" class="i">string</span> <span class="o">*</span> <span onmouseout="hideTip(event, 'fs11', 29)" onmouseover="showTip(event, 'fs11', 29)" class="i">string</span> <span onmouseout="hideTip(event, 'fs12', 30)" onmouseover="showTip(event, 'fs12', 30)" class="i">list</span> <span class="o">*</span> <span onmouseout="hideTip(event, 'fs13', 31)" onmouseover="showTip(event, 'fs13', 31)" class="i">AsyncReplyChannel</span><span class="o">&lt;</span><span onmouseout="hideTip(event, 'fs10', 32)" onmouseover="showTip(event, 'fs10', 32)" class="i">byte</span> [] <span onmouseout="hideTip(event, 'fs12', 33)" onmouseover="showTip(event, 'fs12', 33)" class="i">list</span><span class="o">&gt;</span> 
+    |<span class="i">ReceiveMessageAsync</span> <span class="k">of</span> <span onmouseout="hideTip(event, 'fs10', 34)" onmouseover="showTip(event, 'fs10', 34)" class="i">byte</span>[] <span onmouseout="hideTip(event, 'fs12', 35)" onmouseover="showTip(event, 'fs12', 35)" class="i">list</span> <span class="o">*</span> <span onmouseout="hideTip(event, 'fs11', 36)" onmouseover="showTip(event, 'fs11', 36)" class="i">string</span> <span class="o">*</span> <span onmouseout="hideTip(event, 'fs11', 37)" onmouseover="showTip(event, 'fs11', 37)" class="i">string</span> <span onmouseout="hideTip(event, 'fs12', 38)" onmouseover="showTip(event, 'fs12', 38)" class="i">list</span> <span class="o">*</span> <span onmouseout="hideTip(event, 'fs13', 39)" onmouseover="showTip(event, 'fs13', 39)" class="i">AsyncReplyChannel</span><span class="o">&lt;</span><span onmouseout="hideTip(event, 'fs10', 40)" onmouseover="showTip(event, 'fs10', 40)" class="i">byte</span> [] <span onmouseout="hideTip(event, 'fs12', 41)" onmouseover="showTip(event, 'fs12', 41)" class="i">list</span><span class="o">&gt;</span>
+</code></pre></td>
+</tr>
+</table>
+</section>
+<section >
+<h3>Multi-Stage Programming</h3>
+<img width="560" src="images/msp.png">
+</section>
+</section>
+<section >
+<h3>Conclusion</h3>
+<ul>
+<li>
+An F# Library for :
+<ul>
+<li>Distributed programming</li>
+<li>On-demand static generation types</li>
+<li>Supporting Asynchronous + Synchronous operations</li>
+<li>Basic session types operators</li>
+<li><strong><em>.NET</em></strong> Types</li>
+</ul>
+</li>
+</ul>
+</section>
+<section >
+<h3>Future Work</h3>
+<ul>
+<li>Linearity at Compile-time</li>
+</ul>
+<table class="pre"><tr><td class="lines"><pre class="fssnip"><span class="l">1: </span>
+<span class="l">2: </span>
+<span class="l">3: </span>
+</pre></td>
+<td class="snippet"><pre class="fssnip highlighted"><code lang="fsharp"><span class="k">let</span> <span class="i">x</span> <span class="o">=</span> <span class="k">new</span> <span class="i">A_Channel</span>()
+<span class="k">let</span> <span class="i">a</span> <span class="o">=</span> <span class="i">x</span><span class="o">.</span><span class="i">doSomething</span>()
+<span class="c">//let b = x.doSomething()</span>
+</code></pre></td>
+</tr>
+</table>
+<ul>
+<li>Add support for Multi-thread programming</li>
+<li>Improve support for branching with lambdas or Discriminated Unions</li>
+</ul>
+</section>
+<section >
+<h3>Question</h3>
+<table class="pre"><tr><td class="lines"><pre class="fssnip"><span class="l">1: </span>
+<span class="l">2: </span>
+<span class="l">3: </span>
+</pre></td>
+<td class="snippet"><pre class="fssnip highlighted"><code lang="fsharp"><span class="k">type</span> <span class="i">Question</span> <span class="o">=</span> <span class="i">TypeProvider</span><span class="o">&lt;</span><span class="s">&quot;&quot;&quot; &quot;Ask&quot;: &quot;A question&quot; &quot;&quot;&quot;</span><span class="o">&gt;</span>
+<span class="k">let</span> <span class="i">question</span> <span class="o">=</span> <span class="i">Question</span><span class="o">.</span><span class="i">Parse</span>(<span class="s">&quot;&quot;&quot; &quot;Ask&quot; : &quot;Session types rock&quot; &quot;&quot;&quot;</span>)
+<span class="k">let</span> <span class="i">response</span> <span class="o">=</span> <span class="i">question</span><span class="o">.</span><span class="i">Ask</span>
+</code></pre></td>
+</tr>
+</table>
+</section>
+
+
+        </div>
+    </div>
+    <script src="lib/js/head.min.js"></script>
+    <script src="js/reveal.js"></script>
+    <script>
+        // Add the nohighlight class and data-noescape attribute to code elements that have already been formatted by FSharp.Formatting
+        $('pre.highlighted code').addClass('nohighlight').attr('data-noescape', '');
+
+        // Full list of configuration options available here:
+        // https://github.com/hakimel/reveal.js#configuration
+        Reveal.initialize({
+            controls: true,
+            progress: true,
+            history: true,
+            center: true,
+
+            transition: 'default', // default/cube/page/concave/zoom/linear/fade/none
+
+            // Parallax scrolling
+            // parallaxBackgroundImage: 'https://s3.amazonaws.com/hakim-static/reveal-js/reveal-parallax-1.jpg',
+            // parallaxBackgroundSize: '2100px 900px',
+
+            // Optional libraries used to extend on reveal.js
+            dependencies: [
+                { src: 'lib/js/classList.js', condition: function () { return !document.body.classList; } },
+                { src: 'plugin/markdown/marked.js', condition: function () { return !!document.querySelector('[data-markdown]'); } },
+                { src: 'plugin/markdown/markdown.js', condition: function () { return !!document.querySelector('[data-markdown]'); } },
+                { src: 'plugin/highlight/highlight.js', async: true, callback: function () { hljs.initHighlightingOnLoad(); } },
+                { src: 'plugin/zoom-js/zoom.js', async: true, condition: function () { return !!document.body.classList; } },
+                { src: 'plugin/notes/notes.js', async: true, condition: function () { return !!document.body.classList; } }
+            ]
+        });
+
+    </script>
+</body>
+</html>
+
